@@ -3,16 +3,18 @@ services:
     image: postgres:15-alpine
     container_name: drone-delivery-db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: drone_delivery
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,14 +28,16 @@ services:
       dockerfile: Dockerfile
     container_name: drone-delivery-app
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/drone_delivery?schema=public
-      JWT_SECRET: drone-delivery-secret-key-change-in-production-2024
-      JWT_EXPIRES_IN: 15m
-      PORT: 3000
-      NODE_ENV: development
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      PORT: ${PORT}
+      NODE_ENV: ${NODE_ENV}
     ports:
-      - "3000:3000"
+      - "${PORT}:3000"
     volumes:
       - .:/app
       - /app/node_modules

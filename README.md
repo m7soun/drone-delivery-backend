@@ -101,6 +101,8 @@ The Makefile provides convenient commands for all operations.
 git clone <repository-url>
 cd drone-delivery-backend
 
+cp .env.example .env
+
 make up
 
 make seed
@@ -137,6 +139,8 @@ If you don't have Make installed, use Docker Compose directly.
 ```bash
 git clone <repository-url>
 cd drone-delivery-backend
+
+cp .env.example .env
 
 docker-compose up -d
 
@@ -205,13 +209,11 @@ docker run --name drone-postgres \
 cp .env.example .env
 ```
 
-Edit `.env`:
+The `.env` file is ready to use with default values. For production, update:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/drone_delivery"
-JWT_SECRET="your-secret-key"
-JWT_EXPIRES_IN="15m"
-PORT=3000
+DB_PASSWORD=your-secure-password
+JWT_SECRET=your-strong-random-secret
 ```
 
 **Step 4: Setup Database**
@@ -1214,32 +1216,53 @@ drone-delivery-backend/
 
 ## Environment Configuration
 
+### Centralized Environment Variables
+
+All environments (Docker, native, production) use a single `.env` file. Simply copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
 ### Environment Variables
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:postgres@localhost:5432/drone_delivery` | Yes |
-| `JWT_SECRET` | Secret key for JWT signing | `drone-delivery-secret-key-change-in-production-2024` | Yes |
+| `NODE_ENV` | Environment mode | `development` | Yes |
+| `DB_HOST` | Database host | `localhost` | Yes |
+| `DB_PORT` | Database port | `5432` | Yes |
+| `DB_USER` | Database username | `postgres` | Yes |
+| `DB_PASSWORD` | Database password | `postgres` | Yes |
+| `DB_NAME` | Database name | `drone_delivery` | Yes |
+| `DATABASE_URL` | Auto-generated PostgreSQL connection string | Auto | Yes |
+| `JWT_SECRET` | Secret key for JWT signing | - | Yes |
 | `JWT_EXPIRES_IN` | Token expiration time | `15m` | No |
 | `PORT` | Server port | `3000` | No |
 
-### Example .env File
+### .env File Structure
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/drone_delivery"
-JWT_SECRET="your-super-secret-key-change-this"
-JWT_EXPIRES_IN="15m"
+NODE_ENV=development
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=drone_delivery
+
+DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public
+
+JWT_SECRET=drone-delivery-secret-key-change-in-production-2024
+JWT_EXPIRES_IN=15m
+
 PORT=3000
 ```
 
-### Docker Environment
-
-The `docker-compose.yml` includes:
-- PostgreSQL 15
-- Application (multi-stage build)
-- Persistent volume for database
-- Health checks
-- Auto-restart policies
+**Important:**
+- For production, change `JWT_SECRET` to a strong random string
+- Update `DB_PASSWORD` with a secure password
+- Set `NODE_ENV=production` for production deployments
+- All Docker commands (`make up`, `make prod-up`) automatically use the `.env` file
 
 ---
 
