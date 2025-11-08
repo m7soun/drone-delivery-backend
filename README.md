@@ -12,7 +12,7 @@ make up
 make seed
 ```
 
-That's it! API running at http://localhost:3000
+API running at http://localhost:3000
 
 ## What's Inside
 
@@ -181,11 +181,3 @@ bruno-collection/   # API tests
 - **orders** - Delivery orders with lifecycle
 - **order_handoffs** - Failed drone reassignments
 - **location_history** - Drone movement tracking
-
-## Contributing
-
-This is a demo project. Feel free to fork and modify.
-
-## License
-
-MIT
