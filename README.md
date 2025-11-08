@@ -101,7 +101,7 @@ The Makefile provides convenient commands for all operations.
 git clone <repository-url>
 cd drone-delivery-backend
 
-cp .env.example .env
+make setup
 
 make up
 
@@ -114,6 +114,8 @@ make logs
 
 | Command | Description |
 |---------|-------------|
+| `make setup` | Create .env and generate JWT secret |
+| `make generate-secret` | Generate new JWT_SECRET |
 | `make up` | Start all services (app + database) |
 | `make down` | Stop all services |
 | `make restart` | Restart all services |
@@ -141,6 +143,8 @@ git clone <repository-url>
 cd drone-delivery-backend
 
 cp .env.example .env
+
+SECRET=$(openssl rand -base64 64 | tr -d '\n') && sed -i.bak "s|^JWT_SECRET=.*|JWT_SECRET=$SECRET|" .env && rm -f .env.bak
 
 docker-compose up -d
 
@@ -207,13 +211,14 @@ docker run --name drone-postgres \
 
 ```bash
 cp .env.example .env
+
+SECRET=$(openssl rand -base64 64 | tr -d '\n') && sed -i.bak "s|^JWT_SECRET=.*|JWT_SECRET=$SECRET|" .env && rm -f .env.bak
 ```
 
-The `.env` file is ready to use with default values. For production, update:
+The `.env` file now has a secure JWT secret. For production, also update:
 
 ```env
 DB_PASSWORD=your-secure-password
-JWT_SECRET=your-strong-random-secret
 ```
 
 **Step 4: Setup Database**
@@ -1218,11 +1223,17 @@ drone-delivery-backend/
 
 ### Centralized Environment Variables
 
-All environments (Docker, native, production) use a single `.env` file. Simply copy `.env.example` to `.env`:
+All environments (Docker, native, production) use a single `.env` file.
+
+**Quick Setup:**
 
 ```bash
-cp .env.example .env
+make setup
 ```
+
+This automatically:
+- Copies `.env.example` to `.env`
+- Generates a secure random JWT_SECRET
 
 ### Environment Variables
 

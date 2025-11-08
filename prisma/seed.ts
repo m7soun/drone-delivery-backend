@@ -49,22 +49,22 @@ function addOffset(coord: number, maxOffset: number = 0.01): number {
 }
 
 async function main() {
-  console.log('🌱 Starting database seed...\n');
+  console.log('Starting database seed...\n');
 
   
-  console.log('🗑️  Clearing existing data...');
+  console.log('Clearing existing data...');
   await prisma.locationHistory.deleteMany();
   await prisma.orderHandoff.deleteMany();
   await prisma.order.deleteMany();
   await prisma.drone.deleteMany();
   await prisma.user.deleteMany();
-  console.log('✅ Existing data cleared\n');
+  console.log('Existing data cleared\n');
 
   
   const hashedPassword = await hashPassword('password123');
 
   
-  console.log('👤 Creating admin users...');
+  console.log('Creating admin users...');
   const admins = await Promise.all([
     prisma.user.create({
       data: {
@@ -81,10 +81,10 @@ async function main() {
       },
     }),
   ]);
-  console.log(`✅ Created ${admins.length} admin users\n`);
+  console.log(`Created ${admins.length} admin users\n`);
 
   
-  console.log('👥 Creating end users...');
+  console.log('Creating end users...');
   const endusers = await Promise.all([
     prisma.user.create({
       data: {
@@ -122,10 +122,10 @@ async function main() {
       },
     }),
   ]);
-  console.log(`✅ Created ${endusers.length} end users\n`);
+  console.log(`Created ${endusers.length} end users\n`);
 
   
-  console.log('🚁 Creating drones...');
+  console.log('Creating drones...');
   const droneUsers = await Promise.all([
     prisma.user.create({
       data: {
@@ -221,10 +221,10 @@ async function main() {
       },
     }),
   ]);
-  console.log(`✅ Created ${drones.length} drones\n`);
+  console.log(`Created ${drones.length} drones\n`);
 
   
-  console.log('📦 Creating orders...');
+  console.log('Creating orders...');
 
   
   const pendingOrders = [];
@@ -380,7 +380,7 @@ async function main() {
     },
   });
 
-  console.log(`✅ Created 12 orders in various states:`);
+  console.log(`Created 12 orders in various states:`);
   console.log(`   - ${pendingOrders.length} PENDING`);
   console.log(`   - 1 ASSIGNED`);
   console.log(`   - 1 IN_TRANSIT`);
@@ -389,20 +389,20 @@ async function main() {
   console.log(`   - 1 PENDING_HANDOFF\n`);
 
   
-  console.log('📊 Seed Summary:');
+  console.log('Seed Summary:');
   console.log('================');
-  console.log(`✅ ${admins.length} Admins`);
-  console.log(`✅ ${endusers.length} End Users`);
-  console.log(`✅ ${drones.length} Drones`);
+  console.log(`${admins.length} Admins`);
+  console.log(`${endusers.length} End Users`);
+  console.log(`${drones.length} Drones`);
   console.log(`   - 2 Available`);
   console.log(`   - 1 Busy`);
   console.log(`   - 1 Broken`);
   console.log(`   - 1 In Maintenance`);
-  console.log(`✅ 12 Orders`);
-  console.log(`✅ 1 Order Handoff`);
-  console.log(`✅ ${locationHistoryPoints} Location History Points`);
-  console.log('\n🎉 Database seeded successfully!');
-  console.log('\n📝 Test Credentials (all passwords: password123):');
+  console.log(`12 Orders`);
+  console.log(`1 Order Handoff`);
+  console.log(`${locationHistoryPoints} Location History Points`);
+  console.log('\nDatabase seeded successfully!');
+  console.log('\nTest Credentials (all passwords: password123):');
   console.log('   Admin: admin@dronedelivery.com');
   console.log('   User: john.doe@example.com');
   console.log('   Drone: drone.alpha@dronedelivery.com');
@@ -410,7 +410,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error('Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {

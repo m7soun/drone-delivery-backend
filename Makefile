@@ -1,10 +1,32 @@
-.PHONY: help build up down logs clean restart test
+.PHONY: help setup generate-secret build up down logs clean restart test
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+setup: ## Initial setup (copy .env and generate JWT secret)
+	@if [ ! -f .env ]; then \
+		cp .env.example .env; \
+		echo "✓ Created .env file"; \
+	else \
+		echo "✓ .env file already exists"; \
+	fi
+	@$(MAKE) generate-secret
+
+generate-secret: ## Generate and set JWT_SECRET in .env
+	@if [ ! -f .env ]; then \
+		echo "Error: .env file not found. Run 'make setup' first."; \
+		exit 1; \
+	fi
+	@SECRET=$$(openssl rand -base64 64 | tr -d '\n'); \
+	if grep -q "^JWT_SECRET=" .env; then \
+		sed -i.bak "s|^JWT_SECRET=.*|JWT_SECRET=$$SECRET|" .env && rm -f .env.bak; \
+	else \
+		echo "JWT_SECRET=$$SECRET" >> .env; \
+	fi
+	@echo "✓ JWT_SECRET generated and saved to .env"
 
 build: ## Build Docker images
 	docker-compose build
